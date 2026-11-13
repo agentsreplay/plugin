@@ -4,7 +4,7 @@
       "command": "/bin/sh",
       "args": [
         "-c",
-        "exec /usr/bin/nc -U \"$HOME/Library/Application Support/AgentReplay/mcp.sock\""
+        "S=\"$HOME/Library/Application Support/AgentReplay/mcp.sock\"; i=0; while [ ! -S \"$S\" ] && [ $i -lt 18 ]; do sleep 0.5; i=$((i+1)); done; exec /usr/bin/nc -U \"$S\""
       ]
     }
   }
