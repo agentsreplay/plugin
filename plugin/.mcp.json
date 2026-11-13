@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "agents-replay": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "exec /usr/bin/nc -U \"$HOME/Library/Application Support/AgentReplay/mcp.sock\""
+      ]
+    }
+  }
+}

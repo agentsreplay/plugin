@@ -1,0 +1,91 @@
+{
+  "name": "agents-replay",
+  "version": "1.0.2",
+  "description": "Agents Replay: see what Codex, Claude Code and Claude Desktop did on your Mac, live on your iPhone (local, end-to-end encrypted).",
+  "author": {
+    "name": "Cedano Labs LLC",
+    "url": "https://agentsreplay.com/"
+  },
+  "homepage": "https://agentsreplay.com/",
+  "mcpServers": "./.mcp.json",
+  "hooks": {
+    "hooks": {
+      "UserPromptSubmit": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "/usr/bin/nc -U -w1 \"$HOME/Library/Application Support/AgentReplay/hook.sock\" >/dev/null 2>&1 || true",
+              "timeout": 5
+            }
+          ]
+        }
+      ],
+      "PreToolUse": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "/usr/bin/nc -U -w1 \"$HOME/Library/Application Support/AgentReplay/hook.sock\" >/dev/null 2>&1 || true",
+              "timeout": 5
+            }
+          ]
+        }
+      ],
+      "PostToolUse": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "/usr/bin/nc -U -w1 \"$HOME/Library/Application Support/AgentReplay/hook.sock\" >/dev/null 2>&1 || true",
+              "timeout": 5
+            }
+          ]
+        }
+      ],
+      "Stop": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "/usr/bin/nc -U -w1 \"$HOME/Library/Application Support/AgentReplay/hook.sock\" >/dev/null 2>&1 || true",
+              "timeout": 5
+            }
+          ]
+        }
+      ],
+      "SessionStart": [
+        {
+          "hooks": [
+            {
+              "type": "command",
+              "command": "\"${PLUGIN_ROOT}/bin/ensure-daemon\"",
+              "timeout": 10
+            },
+            {
+              "type": "command",
+              "command": "/usr/bin/nc -U -w1 \"$HOME/Library/Application Support/AgentReplay/hook.sock\" >/dev/null 2>&1 || true",
+              "timeout": 5
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "interface": {
+    "displayName": "Agents Replay",
+    "shortDescription": "Your agents' day, on your iPhone",
+    "longDescription": "Agents Replay records what your agents do on this Mac and shows it on your iPhone as a recap of the day and a replay of every click. Your iPhone reads it straight from your Mac over your own Wi-Fi, end-to-end encrypted. Ask Codex to pair your iPhone to get the QR code.",
+    "developerName": "Cedano Labs LLC",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://agentsreplay.com/",
+    "privacyPolicyURL": "https://agentsreplay.com/privacy",
+    "defaultPrompt": [
+      "Pair my iPhone with Agents Replay",
+      "What's the Agents Replay status?"
+    ]
+  }
+}

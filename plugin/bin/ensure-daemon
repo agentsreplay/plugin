@@ -1,0 +1,35 @@
+#!/bin/sh
+# SessionStart (the Claude Code plugin and the Codex plugin run this same file): make sure the Agents Replay
+# daemon is installed, current and running. Returns at once; any install runs in the background so the agent never waits on it. The daemon must be Apple-notarized and signed by our team, or it isn't installed.
+# Updates: at most once a day, compare the installed version with the site's; a different one is downloaded and swapped in
+# (same Developer ID, so macOS privacy grants stay), unless a keep-awake session is holding sleep off right now.
+SOCK="$HOME/Library/Application Support/AgentReplay/mcp.sock"
+APP="$HOME/Applications/AgentReplay.app"
+TEAM=FGNRK5T6HD
+BASE=${AGENTS_REPLAY_URL:-https://agentsreplay.com/download}
+STAMP="$HOME/Library/Application Support/AgentReplay/update-checked"
+running() { [ -S "$SOCK" ] && launchctl print "gui/$(id -u)/com.agentreplay.companion" >/dev/null 2>&1; }
+due() { [ ! -x "$APP/Contents/MacOS/AgentReplay" ] || [ -z "$(find "$STAMP" -mtime -1 2>/dev/null)" ]; }
+running && ! due && exit 0
+(
+  have=$(defaults read "$APP/Contents/Info" CFBundleShortVersionString 2>/dev/null)
+  if [ -x "$APP/Contents/MacOS/AgentReplay" ]; then
+    mkdir -p "$(dirname "$STAMP")" && touch "$STAMP"
+    want=$(curl -fsSL "$BASE/version") || want=$have
+    # a local build (not notarized) is a developer's own: never replace it
+    { [ "$want" = "$have" ] || ! spctl -a -t exec "$APP" 2>/dev/null || pmset -g | grep -q 'SleepDisabled[[:space:]]*1'; } && want=
+  else
+    want=new
+  fi
+  if [ -n "$want" ]; then
+    TMP=$(mktemp -d) || exit 1
+    curl -fsSL "$BASE/AgentReplay.zip" -o "$TMP/a.zip" && ditto -x -k "$TMP/a.zip" "$TMP/x" \
+      && codesign --verify --deep --strict -R="anchor apple generic and certificate leaf[subject.OU] = \"$TEAM\"" "$TMP/x/AgentReplay.app" \
+      && spctl -a -t exec "$TMP/x/AgentReplay.app" \
+      && mkdir -p "$HOME/Applications" && rm -rf "$APP" && mv "$TMP/x/AgentReplay.app" "$APP" \
+      && launchctl kickstart -k "gui/$(id -u)/com.agentreplay.companion" 2>/dev/null
+    rm -rf "$TMP"
+  fi
+  running || { [ -x "$APP/Contents/MacOS/AgentReplay" ] && "$APP/Contents/MacOS/AgentReplay" setup; }
+) >>"$HOME/Library/Logs/AgentReplay-install.log" 2>&1 &
+exit 0

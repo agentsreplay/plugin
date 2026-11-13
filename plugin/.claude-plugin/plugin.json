@@ -1,0 +1,8 @@
+{
+  "name": "agents-replay",
+  "version": "1.0.2",
+  "description": "Agents Replay: see what Claude Code, Claude Desktop and Codex did on your Mac, live on your iPhone (local, end-to-end encrypted).",
+  "author": {
+    "name": "Cedano Labs LLC"
+  }
+}

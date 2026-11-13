@@ -1,0 +1,13 @@
+{
+  "name": "agents-replay",
+  "owner": {
+    "name": "Agents Replay"
+  },
+  "plugins": [
+    {
+      "name": "agents-replay",
+      "source": "./plugin",
+      "description": "See what your agents did on your Mac, live on your iPhone."
+    }
+  ]
+}
